@@ -19,7 +19,8 @@ namespace PersonalBlog.Application.Identity
     /// </summary>
     public class ApplicationRoleManager :
         RoleManager<Role>,
-        IApplicationRoleManager
+        IApplicationRoleManager,
+        IQueryableRoleManager
     {
         private readonly IHttpContextAccessor _contextAccessor;
         private readonly IUnitOfWork _uow;

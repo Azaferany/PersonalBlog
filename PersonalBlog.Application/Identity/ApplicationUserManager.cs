@@ -12,15 +12,18 @@ using PersonalBlog.Domain.Identity;
 using DNT.Deskly.EFCore.Context;
 using PersonalBlog.Infrastructure.Context;
 using PersonalBlog.Application.Identity.Contracts;
+using DNT.Deskly.Validation;
 
 namespace PersonalBlog.Application.Identity
 {
     /// <summary>
     /// More info: http://www.dotnettips.info/post/2578
     /// </summary>
+    [SkipValidationAttribute]
     public class ApplicationUserManager :
         UserManager<User>,
-        IApplicationUserManager
+        IApplicationUserManager,
+        IQueryableUserManager
     {
         private readonly IHttpContextAccessor _contextAccessor;
         private readonly IUnitOfWork _uow;
@@ -79,12 +82,12 @@ namespace PersonalBlog.Application.Identity
         {
             return base.VerifyPasswordAsync(store, user, password);
         }
-
+        [EnableValidation]
         public override async Task<IdentityResult> CreateAsync(User user)
         {
             return await base.CreateAsync(user);
         }
-
+        [EnableValidation]
         public override async Task<IdentityResult> CreateAsync(User user, string password)
         {
             return await base.CreateAsync(user, password);

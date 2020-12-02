@@ -12,16 +12,11 @@ using DNT.Deskly.Validation;
 using DNT.Deskly.Validation.Interception;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection;
-using PersonalBlog.Application.Blog;
-using PersonalBlog.Application.Blog.Validators;
 using PersonalBlog.Application.Contracts;
 using PersonalBlog.Application.Identity;
 using PersonalBlog.Domain.Configuration;
 using PersonalBlog.Domain.Identity;
-using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 
 namespace PersonalBlog.Application
 {
@@ -38,7 +33,6 @@ namespace PersonalBlog.Application
 
             services.AddScoped<ISecurityTrimmingService, SecurityTrimmingService>();
 
-            services.AddScoped<ExceptionHandlingInterceptor, ExceptionHandlingInterceptor>();
 
 
             services.AddScoped<ISecurityTrimmingService, SecurityTrimmingService>();
@@ -102,8 +96,7 @@ namespace PersonalBlog.Application
                          ProxyGenerator.CreateInterfaceProxyWithTargetInterface(
                               descriptor.ServiceType.MakeGenericType(target.GetType().GetGenericArguments()),
                               target, serviceProvider.GetRequiredService<ValidationInterceptor>(),
-                      (IInterceptor)serviceProvider.GetRequiredService<TransactionInterceptor>(),
-                      (IInterceptor)serviceProvider.GetRequiredService<ExceptionHandlingInterceptor>()));
+                      (IInterceptor)serviceProvider.GetRequiredService<TransactionInterceptor>()));
                 //else if (descriptor.ServiceType == typeof(ICrudService<>))
                 //{
                 //    foreach (var entityType in typeof(SiteSettings).Assembly.GetTypes().Where(x=>x==typeof(IEntity)).ToList())
@@ -125,8 +118,7 @@ namespace PersonalBlog.Application
                             ProxyGenerator.CreateInterfaceProxyWithTargetInterface(
                             descriptor.ServiceType.MakeGenericType(typeof(int), entityType),
                             target, serviceProvider.GetRequiredService<ValidationInterceptor>(),
-                        (IInterceptor)serviceProvider.GetRequiredService<TransactionInterceptor>(),
-                        (IInterceptor)serviceProvider.GetRequiredService<ExceptionHandlingInterceptor>()));
+                        (IInterceptor)serviceProvider.GetRequiredService<TransactionInterceptor>()));
                     }
                         
 

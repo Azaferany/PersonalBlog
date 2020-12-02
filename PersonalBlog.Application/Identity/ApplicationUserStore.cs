@@ -3,6 +3,7 @@ using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
 using DNT.Deskly.EFCore.Context;
+using DNT.Deskly.Validation;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using PersonalBlog.Application.Identity.Contracts;
@@ -109,7 +110,11 @@ namespace PersonalBlog.Application.Identity
         {
             return base.RemoveUserTokenAsync(token);
         }
-
+        [SkipValidationAttribute]
+        public override Task<IdentityResult> DeleteAsync(User user, CancellationToken cancellationToken = default)
+        {
+            return base.DeleteAsync(user, cancellationToken);
+        }
         #endregion
 
         #region CustomMethods

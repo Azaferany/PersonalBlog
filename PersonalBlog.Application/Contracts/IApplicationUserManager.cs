@@ -9,6 +9,14 @@ using PersonalBlog.Domain.Identity;
 
 namespace PersonalBlog.Application.Identity.Contracts
 {
+    public interface IQueryableUserManager : IDisposable
+    {
+        /// <summary>
+        ///     Returns an IQueryable of users if the store is an IQueryableUserStore
+        /// </summary>
+        IQueryable<User> Users { get; }
+    }
+
     public interface IApplicationUserManager : IDisposable
     {
         #region BaseClass
@@ -156,11 +164,6 @@ namespace PersonalBlog.Application.Identity.Contracts
         /// information, otherwise false.
         /// </value>
         bool SupportsQueryableUsers { get; }
-
-        /// <summary>
-        ///     Returns an IQueryable of users if the store is an IQueryableUserStore
-        /// </summary>
-        IQueryable<User> Users { get; }
 
         /// <summary>
         /// Returns the Name claim value if present otherwise returns null.

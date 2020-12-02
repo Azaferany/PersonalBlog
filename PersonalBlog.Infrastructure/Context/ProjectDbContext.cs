@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using DNT.Deskly.EFCore.Caching;
 using DNT.Deskly.EFCore.Context;
@@ -7,7 +8,9 @@ using DNT.Deskly.EFCore.Cryptography;
 using DNT.Deskly.EFCore.Logging;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using PersonalBlog.Domain.Blog;
+using PersonalBlog.Domain.Configuration;
 using PersonalBlog.Domain.Identity;
 using PersonalBlog.Infrastructure.Mappings;
 using PersonalBlog.Infrastructure.Mappings.Identity;
@@ -36,7 +39,7 @@ namespace PersonalBlog.Infrastructure.Context
         {
             modelBuilder.ApplyLogConfiguration();
             modelBuilder.ApplyProtectionKeyConfiguration();
-            modelBuilder.ApplySSqlCacheConfiguration(); 
+            modelBuilder.ApplySqlCacheConfiguration(); 
             modelBuilder.AddCustomIdentityMappings();
 
             modelBuilder.AddTrackingFields<int>();

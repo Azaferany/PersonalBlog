@@ -9,10 +9,8 @@ using PersonalBlog.Domain.Identity;
 
 namespace PersonalBlog.Application.Identity.Contracts
 {
-    public interface IApplicationRoleManager : IDisposable
+    public interface IQueryableRoleManager : IDisposable
     {
-        #region BaseClass
-
         /// <summary>
         /// Gets an IQueryable collection of Roles if the persistence store is an <see cref="IQueryableRoleStore{TRole}"/>,
         /// otherwise throws a <see cref="NotSupportedException"/>.
@@ -24,6 +22,10 @@ namespace PersonalBlog.Application.Identity.Contracts
         /// returning an IQueryable list of roles.
         /// </remarks>
         IQueryable<Role> Roles { get; }
+    }
+    public interface IApplicationRoleManager : IDisposable
+    {
+        #region BaseClass
 
         /// <summary>
         /// Gets the normalizer to use when normalizing role names to keys.

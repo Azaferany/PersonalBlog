@@ -19,7 +19,7 @@ namespace PersonalBlog.Web.Controllers
         public HomeController(ILogger<HomeController> logger,            
             ICrudService<int, User> service,IUnitOfWork h)
         {
-
+            service.CreateAsync(new User { UserName = "asdasdasdasdasdasdasda" });
         }
 
         public IActionResult Index()

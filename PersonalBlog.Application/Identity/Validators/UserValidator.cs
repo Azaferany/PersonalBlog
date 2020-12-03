@@ -1,16 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.Extensions.Options;
-using PersonalBlog.Domain.Configuration;
 using PersonalBlog.Domain.Identity;
-using PersonalBlog.Common.GuardToolkit;
+using DNT.Deskly.EFCore.Services.Application;
 using DNT.Deskly.Validation;
-using System.Reflection;
-using DNT.Deskly.GuardToolkit;
-using System.ComponentModel.DataAnnotations;
+using Microsoft.AspNetCore.Identity;
+using System.Linq;
 
 namespace PersonalBlog.Application.Identity.Validators
 {
@@ -18,90 +13,33 @@ namespace PersonalBlog.Application.Identity.Validators
     /// Extending the Built-in User Validation
     /// More info: http://www.dotnettips.info/post/2579
     /// </summary>>
-    public class UserValidator : ModelValidator<User, UserManager<User>>, IUserValidator<User>
+    public class UserValidator : DNT.Deskly.EFCore.Identity.Validation.UserValidator<User> 
     {
-        public IdentityErrorDescriber Describer { get; private set; }
+
 
 
         public UserValidator(
-            IdentityErrorDescriber describer,// How to use CustomIdentityErrorDescriber
-            IOptionsSnapshot<SiteSettings> configurationRoot
-            )
+            IdentityErrorDescriber describer// How to use CustomIdentityErrorDescriber
+            ) : base(describer)
         {
-            Describer = describer ?? throw new ArgumentNullException(nameof(configurationRoot));
 
 
         }
 
-        public override Task<IEnumerable<ValidationFailure>> Validate(UserManager<User> validatorCaller, User model)
+        public override async Task<IdentityResult> ValidateAsync(UserManager<User> manager, User user)
         {
-            throw new NotImplementedException();
+            return await base.ValidateAsync(manager, user);
         }
 
-        public virtual async Task<IdentityResult> ValidateAsync(UserManager<User> manager, User user)
+#pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
+        public override async Task<IEnumerable<ValidationFailure>> Validate(object validatorCaller, User model)
+#pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
         {
-            if (manager == null)
+            if (validatorCaller.GetType() != typeof(UserManager<User>))
             {
-                throw new ArgumentNullException(nameof(manager));
+                throw new InvalidCastException("dont use User in another store or CrudServices Exept UserManager");
             }
-            if (user == null)
-            {
-                throw new ArgumentNullException(nameof(user));
-            }
-            var errors = new List<IdentityError>();
-            await ValidateUserName(manager, user, errors);
-            if (manager.Options.User.RequireUniqueEmail)
-            {
-                await ValidateEmail(manager, user, errors);
-            }
-            return errors.Count > 0 ? IdentityResult.Failed(errors.ToArray()) : IdentityResult.Success;
+            return Enumerable.Empty<ValidationFailure>();
         }
-
-        #region Validate
-        private async Task ValidateUserName(UserManager<User> manager, User user, ICollection<IdentityError> errors)
-        {
-            var userName = await manager.GetUserNameAsync(user);
-            if (string.IsNullOrWhiteSpace(userName))
-            {
-                errors.Add(Describer.InvalidUserName(userName));
-            }
-            else if (!string.IsNullOrEmpty(manager.Options.User.AllowedUserNameCharacters) &&
-                userName.Any(c => !manager.Options.User.AllowedUserNameCharacters.Contains(c)))
-            {
-                errors.Add(Describer.InvalidUserName(userName));
-            }
-            else
-            {
-                var owner = await manager.FindByNameAsync(userName);
-                if (owner != null &&
-                    !string.Equals(await manager.GetUserIdAsync(owner), await manager.GetUserIdAsync(user)))
-                {
-                    errors.Add(Describer.DuplicateUserName(userName));
-                }
-            }
-        }
-
-        // make sure email is not empty, valid, and unique
-        private async Task ValidateEmail(UserManager<User> manager, User user, List<IdentityError> errors)
-        {
-            var email = await manager.GetEmailAsync(user);
-            if (string.IsNullOrWhiteSpace(email))
-            {
-                errors.Add(Describer.InvalidEmail(email));
-                return;
-            }
-            if (!new EmailAddressAttribute().IsValid(email))
-            {
-                errors.Add(Describer.InvalidEmail(email));
-                return;
-            }
-            var owner = await manager.FindByEmailAsync(email);
-            if (owner != null &&
-                !string.Equals(await manager.GetUserIdAsync(owner), await manager.GetUserIdAsync(user)))
-            {
-                errors.Add(Describer.DuplicateEmail(email));
-            }
-        }
-        #endregion
     }
 }
